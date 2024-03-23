@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage>
               selectedItemColor: AppColors.button,
               unselectedItemColor: AppColors.white,
               backgroundColor: Colors.transparent,
-              currentIndex: _tabController.index,
+              currentIndex: tabController.index,
               onTap: (index) {
                 setState(() {
                   _tabController.index = index;
