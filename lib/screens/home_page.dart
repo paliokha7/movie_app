@@ -15,41 +15,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  List<Map<String, Object>> savedFilms = [];
-  late List<Widget> tabs;
-
-  void addFilmToSaved(Map<String, Object> film) {
-    if (!savedFilms.any((savedFilm) => savedFilm['id'] == film['id'])) {
-      setState(() {
-        savedFilms.add(film);
-      });
-    }
-  }
-
-  void removeFilmFromSaved(Map<String, Object> film) {
-    setState(() {
-      savedFilms.removeWhere((savedFilm) => savedFilm['id'] == film['id']);
-    });
-  }
-
   int currentIndex = 0;
+
+  List<Widget> tabs = [
+    const MovieList(),
+    const SavedMovies(),
+  ];
 
   late TabController tabController;
 
   @override
   void initState() {
     super.initState();
-    tabs = [
-      MovieList(
-        savedFilms: savedFilms,
-        addFilmToSaved: addFilmToSaved,
-        removeFilmFromSaved: removeFilmFromSaved,
-      ),
-      SavedMovies(
-        savedFilms: savedFilms,
-        onRemove: removeFilmFromSaved,
-      ),
-    ];
     tabController = TabController(length: tabs.length, vsync: this);
     tabController.addListener(
       () {
