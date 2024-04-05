@@ -15,79 +15,83 @@ class SavedMovies extends StatefulWidget {
 class _SavedMoviesState extends State<SavedMovies> {
   @override
   Widget build(BuildContext context) {
-    final films = context.watch<SavedProvider>().savedList;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 3 / 5,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-          ),
-          itemCount: films.length,
-          itemBuilder: (context, index) {
-            final film = films[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MovieDetails(film: film),
+        child: Consumer<SavedProvider>(
+          builder: (context, savedProvider, child) {
+            final films = savedProvider.savedList;
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 3 / 5,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+              ),
+              itemCount: films.length,
+              itemBuilder: (context, index) {
+                final film = films[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MovieDetails(film: film),
+                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: AppColors.background,
+                          title: const Text(
+                            'Delete Film',
+                            style: TextStyle(color: AppColors.white),
+                          ),
+                          content: const Text(
+                            'Are you sure want to remove the film from your list',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                'No',
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                savedProvider.removeFilm(film);
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                'Yes',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Hero(
+                    tag: '${film['id']}',
+                    child: FilmCard(
+                      image: film['imageUrl'] as String,
+                    ),
                   ),
                 );
               },
-              onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      backgroundColor: AppColors.background,
-                      title: const Text(
-                        'Delete Film',
-                        style: TextStyle(color: AppColors.white),
-                      ),
-                      content: const Text(
-                        'Are you sure want to remove the film from your list',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            'No',
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.read<SavedProvider>().removeFilm(film);
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            'Yes',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Hero(
-                tag: '${film['id']}',
-                child: FilmCard(
-                  image: film['imageUrl'] as String,
-                ),
-              ),
             );
           },
         ),

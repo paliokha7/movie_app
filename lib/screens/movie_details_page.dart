@@ -15,9 +15,10 @@ class MovieDetails extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MovieDetails> {
+  bool isSelected = false;
+
   void addToList() {
     final savedProvider = Provider.of<SavedProvider>(context, listen: false);
-
     savedProvider.addFilm(widget.film, context);
   }
 
@@ -163,10 +164,13 @@ class _MyWidgetState extends State<MovieDetails> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.button,
         onPressed: () {
-          addToList();
+          setState(() {
+            addToList();
+            isSelected = !isSelected;
+          });
         },
-        child: const Icon(
-          Icons.bookmark,
+        child: Icon(
+          isSelected ? Icons.bookmark : Icons.bookmark_add_outlined,
           color: AppColors.background,
         ),
       ),
