@@ -1,40 +1,24 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_4/provider/saved_provider.dart';
 import 'package:task_4/theme/appcolors.dart';
 import 'package:task_4/widgets/screenshots_widget.dart';
 
 class MovieDetails extends StatefulWidget {
   final Map<String, Object> film;
-  final bool isSaved;
-  final Function(Map<String, Object>, Function) onSave;
-  final Function(Map<String, Object>, Function) onRemove;
-
-  const MovieDetails({
-    super.key,
-    required this.film,
-    required this.isSaved,
-    required this.onSave,
-    required this.onRemove,
-  });
+  const MovieDetails({super.key, required this.film});
 
   @override
   State<MovieDetails> createState() => _MyWidgetState();
 }
 
 class _MyWidgetState extends State<MovieDetails> {
-  late bool isSaved;
+  void addToList() {
+    final savedProvider = Provider.of<SavedProvider>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    isSaved = widget.isSaved;
-  }
-
-  void updateIsSaved(bool newValue) {
-    setState(() {
-      isSaved = newValue;
-    });
+    savedProvider.addFilm(widget.film, context);
   }
 
   @override
@@ -179,13 +163,12 @@ class _MyWidgetState extends State<MovieDetails> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.button,
         onPressed: () {
-          if (isSaved) {
-            widget.onRemove(widget.film, () => updateIsSaved(false));
-          } else {
-            widget.onSave(widget.film, () => updateIsSaved(true));
-          }
+          addToList();
         },
-        child: Icon(widget.isSaved ? Icons.bookmark : Icons.bookmark_border),
+        child: const Icon(
+          Icons.bookmark,
+          color: AppColors.background,
+        ),
       ),
     );
   }

@@ -5,14 +5,7 @@ import 'package:task_4/screens/movie_details_page.dart';
 import 'package:task_4/widgets/film_widget.dart';
 
 class MovieList extends StatelessWidget {
-  final List<Map<String, Object>> savedFilms;
-  final Function(Map<String, Object>) addFilmToSaved;
-  final Function(Map<String, Object>) removeFilmFromSaved;
-  const MovieList(
-      {super.key,
-      required this.savedFilms,
-      required this.addFilmToSaved,
-      required this.removeFilmFromSaved});
+  const MovieList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +27,7 @@ class MovieList extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MovieDetails(
-                      film: film,
-                      isSaved: savedFilms.contains(film),
-                      onSave: addFilmToSaved,
-                      onRemove: removeFilmFromSaved,
-                    ),
+                    builder: (_) => MovieDetails(film: film),
                   ),
                 );
               },
