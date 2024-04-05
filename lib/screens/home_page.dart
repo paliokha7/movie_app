@@ -15,18 +15,41 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  int currentIndex = 0;
+  List<Map<String, Object>> savedFilms = [];
+  late List<Widget> tabs;
 
-  List<Widget> tabs = [
-    const MovieList(),
-    const SavedMovies(),
-  ];
+  void addFilmToSaved(Map<String, Object> film) {
+    if (!savedFilms.any((savedFilm) => savedFilm['id'] == film['id'])) {
+      setState(() {
+        savedFilms.add(film);
+      });
+    }
+  }
+
+  void removeFilmFromSaved(Map<String, Object> film) {
+    setState(() {
+      savedFilms.removeWhere((savedFilm) => savedFilm['id'] == film['id']);
+    });
+  }
+
+  int currentIndex = 0;
 
   late TabController tabController;
 
   @override
   void initState() {
     super.initState();
+    tabs = [
+      MovieList(
+        savedFilms: savedFilms,
+        addFilmToSaved: addFilmToSaved,
+        removeFilmFromSaved: removeFilmFromSaved,
+      ),
+      SavedMovies(
+        savedFilms: savedFilms,
+        onRemove: removeFilmFromSaved,
+      ),
+    ];
     tabController = TabController(length: tabs.length, vsync: this);
     tabController.addListener(
       () {
@@ -83,7 +106,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ];
             },
-            body: TabBarView(controller: _tabController, children: tabs)),
+            body: TabBarView(controller: tabController, children: tabs)),
         bottomNavigationBar: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 200, sigmaY: 200),
@@ -92,10 +115,10 @@ class _HomePageState extends State<HomePage>
               selectedItemColor: AppColors.button,
               unselectedItemColor: AppColors.white,
               backgroundColor: Colors.transparent,
-              currentIndex: _tabController.index,
+              currentIndex: tabController.index,
               onTap: (index) {
                 setState(() {
-                  _tabController.index = index;
+                  tabController.index = index;
                 });
               },
               items: const [

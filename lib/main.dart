@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:task_4/provider/saved_provider.dart';
 import 'package:task_4/screens/home_page.dart';
 import 'package:task_4/theme/appcolors.dart';
 
@@ -13,15 +11,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => SavedProvider()),
-      ],
-      child: MaterialApp(
-        title: 'FilmFinder',
-        theme: MyAppTheme.appTheme,
-        home: const HomePage(),
-      ),
+    return MaterialApp(
+      title: 'FilmFinder',
+      theme: MyAppTheme.appTheme,
+      home: const HomePage(),
     );
   }
 }
