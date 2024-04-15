@@ -155,6 +155,9 @@ class _MovieListState extends State<MovieList> {
                       },
                     ),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
