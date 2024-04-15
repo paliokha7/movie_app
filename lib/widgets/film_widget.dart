@@ -6,13 +6,15 @@ class FilmCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 165,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          image,
-          fit: BoxFit.cover,
+    return Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: SizedBox(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.network(
+            image,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:task_4/provider/saved_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_4/cubit/saved_cubit/saved_cubit.dart';
+import 'package:task_4/data/model/movie_model.dart';
 import 'package:task_4/screens/movie_details_page.dart';
-import 'package:task_4/theme/appcolors.dart';
 import 'package:task_4/widgets/film_widget.dart';
 
 class SavedMovies extends StatefulWidget {
@@ -18,9 +18,9 @@ class _SavedMoviesState extends State<SavedMovies> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Consumer<SavedProvider>(
-          builder: (context, savedProvider, child) {
-            final films = savedProvider.savedList;
+        child: BlocBuilder<SavedCubit, List<Movie>>(
+          builder: (context, state) {
+            final movies = state;
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -28,15 +28,17 @@ class _SavedMoviesState extends State<SavedMovies> {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
               ),
-              itemCount: films.length,
+              itemCount: movies.length,
               itemBuilder: (context, index) {
-                final film = films[index];
+                final movie = movies[index];
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => MovieDetails(film: film),
+                        builder: (context) => MovieDetails(
+                          movie: movie,
+                        ),
                       ),
                     );
                   },
@@ -45,10 +47,9 @@ class _SavedMoviesState extends State<SavedMovies> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          backgroundColor: AppColors.background,
                           title: const Text(
                             'Delete Film',
-                            style: TextStyle(color: AppColors.white),
+                            style: TextStyle(),
                           ),
                           content: const Text(
                             'Are you sure want to remove the film from your list',
@@ -61,14 +62,13 @@ class _SavedMoviesState extends State<SavedMovies> {
                               child: const Text(
                                 'No',
                                 style: TextStyle(
-                                  color: AppColors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             TextButton(
                               onPressed: () {
-                                savedProvider.removeFilm(film);
+                                context.read<SavedCubit>().removeFilm(movie);
                                 Navigator.of(context).pop();
                               },
                               child: const Text(
@@ -85,9 +85,10 @@ class _SavedMoviesState extends State<SavedMovies> {
                     );
                   },
                   child: Hero(
-                    tag: '${film['id']}',
+                    tag: '${movie.id}',
                     child: FilmCard(
-                      image: film['imageUrl'] as String,
+                      image:
+                          "https://image.tmdb.org/t/p/original/${movie.posterPath}",
                     ),
                   ),
                 );

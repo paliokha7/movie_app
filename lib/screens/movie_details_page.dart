@@ -2,13 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_4/provider/saved_provider.dart';
+import 'package:task_4/cubit/saved_cubit/saved_cubit.dart';
+import 'package:task_4/data/model/movie_model.dart';
 import 'package:task_4/theme/appcolors.dart';
-import 'package:task_4/widgets/screenshots_widget.dart';
 
 class MovieDetails extends StatefulWidget {
-  final Map<String, Object> film;
-  const MovieDetails({super.key, required this.film});
+  final Movie movie;
+  const MovieDetails({super.key, required this.movie});
 
   @override
   State<MovieDetails> createState() => _MyWidgetState();
@@ -16,11 +16,6 @@ class MovieDetails extends StatefulWidget {
 
 class _MyWidgetState extends State<MovieDetails> {
   bool isSelected = false;
-
-  void addToList() {
-    final savedProvider = Provider.of<SavedProvider>(context, listen: false);
-    savedProvider.addFilm(widget.film, context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +32,21 @@ class _MyWidgetState extends State<MovieDetails> {
             ),
           ),
         ),
-        title: Text(widget.film['title'] as String),
+        title: Text(widget.movie.title),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: '${widget.film['id']}',
+              tag: '${widget.movie.id}',
               child: Container(
                 height: imageSize,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                      widget.film['imageUrl'] as String,
+                    image: NetworkImage(
+                      "https://image.tmdb.org/t/p/original/${widget.movie.posterPath}",
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -59,8 +54,8 @@ class _MyWidgetState extends State<MovieDetails> {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      AppColors.background.withOpacity(1),
-                      AppColors.background.withOpacity(0),
+                      AppColors.black.withOpacity(1),
+                      AppColors.black.withOpacity(0),
                     ], begin: Alignment.bottomCenter, end: Alignment.center),
                   ),
                 ),
@@ -76,40 +71,20 @@ class _MyWidgetState extends State<MovieDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.film['title'] as String,
+                    widget.movie.title,
                     style: const TextStyle(fontSize: 22),
                   ),
                   const SizedBox(
                     height: 6,
                   ),
-                  Row(
-                    children: [
-                      Text(widget.film['genre'] as String),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Container(
-                          height: 4,
-                          width: 4,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.white,
-                          ),
-                        ),
-                      ),
-                      Text(widget.film['release'] as String),
-                    ],
-                  ),
+                  Text('Release date: ${widget.movie.realeseDate}'),
                   const SizedBox(
                     height: 6,
-                  ),
-                  Text(widget.film['time'] as String),
-                  const SizedBox(
-                    height: 16,
                   ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
-                      foregroundColor: AppColors.background,
+                      foregroundColor: AppColors.black,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -132,32 +107,10 @@ class _MyWidgetState extends State<MovieDetails> {
                   const SizedBox(
                     height: 6,
                   ),
-                  Text(widget.film['description'] as String),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  const Text(
-                    'Screenshots',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
+                  Text(widget.movie.overview),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 40, top: 6),
-              child: SizedBox(
-                height: 150,
-                width: double.infinity,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: (widget.film['shots'] as List<String>).length,
-                  itemBuilder: (context, index) {
-                    final shots = (widget.film['shots'] as List<String>)[index];
-                    return Screenshot(image: shots);
-                  },
-                ),
-              ),
-            )
           ],
         ),
       ),
@@ -165,13 +118,13 @@ class _MyWidgetState extends State<MovieDetails> {
         backgroundColor: AppColors.button,
         onPressed: () {
           setState(() {
-            addToList();
+            context.read<SavedCubit>().addFilm(widget.movie);
             isSelected = !isSelected;
           });
         },
         child: Icon(
           isSelected ? Icons.bookmark : Icons.bookmark_add_outlined,
-          color: AppColors.background,
+          color: AppColors.black,
         ),
       ),
     );

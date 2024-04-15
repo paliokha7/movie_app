@@ -65,15 +65,12 @@ class _HomePageState extends State<HomePage>
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'Search',
-                            hintStyle: const TextStyle(color: AppColors.white),
                             filled: true,
-                            fillColor: AppColors.grey,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             prefixIcon: const Icon(
                               Icons.search,
-                              color: AppColors.white,
                             ),
                           ),
                         ),
@@ -86,7 +83,7 @@ class _HomePageState extends State<HomePage>
             body: TabBarView(controller: tabController, children: tabs)),
         bottomNavigationBar: ClipRRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 200, sigmaY: 200),
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 100),
             child: BottomNavigationBar(
               elevation: 5,
               selectedItemColor: AppColors.button,
