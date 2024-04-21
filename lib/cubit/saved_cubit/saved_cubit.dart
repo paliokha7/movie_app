@@ -15,4 +15,8 @@ class SavedCubit extends Cubit<List<Movie>> {
   void removeFilm(Movie movie) {
     emit(state.where((item) => item.id != movie.id).toList());
   }
+
+  bool isFilmSaved(Movie movie) {
+    return state.contains(movie);
+  }
 }

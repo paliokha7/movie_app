@@ -11,6 +11,12 @@ class TmdbService {
   final topRatedApiUrl =
       "https://api.themoviedb.org/3/movie/top_rated?api_key=$apiKey";
 
+  Future<http.Response> fetchMovieTrailers(int movieId) {
+    final trailerApiUrl =
+        "https://api.themoviedb.org/3/movie/$movieId/videos?api_key=$apiKey";
+    return http.get(Uri.parse(trailerApiUrl));
+  }
+
   Future<List<Movie>> fetchUpComingMovies() async {
     final response = await http.get(Uri.parse(upComingApiUrl));
 
@@ -18,6 +24,18 @@ class TmdbService {
       final List<dynamic> data = json.decode(response.body)['results'];
 
       List<Movie> movies = data.map((movie) => Movie.parseJson(movie)).toList();
+
+      for (var movie in movies) {
+        final trailerResponse = await fetchMovieTrailers(movie.id);
+        if (trailerResponse.statusCode == 200) {
+          final List<dynamic> trailers =
+              json.decode(trailerResponse.body)['results'];
+          if (trailers.isNotEmpty) {
+            movie.trailerKey = trailers[0]['key'];
+          }
+        }
+      }
+
       await Future.delayed(const Duration(seconds: 1));
 
       return movies;
@@ -33,26 +51,50 @@ class TmdbService {
       final List<dynamic> data = json.decode(response.body)['results'];
 
       List<Movie> movies = data.map((movie) => Movie.parseJson(movie)).toList();
+
+      for (var movie in movies) {
+        final trailerResponse = await fetchMovieTrailers(movie.id);
+        if (trailerResponse.statusCode == 200) {
+          final List<dynamic> trailers =
+              json.decode(trailerResponse.body)['results'];
+          if (trailers.isNotEmpty) {
+            movie.trailerKey = trailers[0]['key'];
+          }
+        }
+      }
+
       await Future.delayed(const Duration(seconds: 1));
 
       return movies;
     } else {
-      throw Exception('Failed to load popular movies');
+      throw Exception('Error to load movies');
     }
   }
 
-  Future<List<Movie>> fetchTopRatedMovies() {
-    return http.get(Uri.parse(topRatedApiUrl)).then((response) {
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body)['results'];
+  Future<List<Movie>> fetchTopRatedMovies() async {
+    final response = await http.get(Uri.parse(topRatedApiUrl));
 
-        List<Movie> movies =
-            data.map((movie) => Movie.parseJson(movie)).toList();
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body)['results'];
 
-        return Future.delayed(const Duration(seconds: 1), () => movies);
-      } else {
-        throw Exception('Failed to load top rated movies');
+      List<Movie> movies = data.map((movie) => Movie.parseJson(movie)).toList();
+
+      for (var movie in movies) {
+        final trailerResponse = await fetchMovieTrailers(movie.id);
+        if (trailerResponse.statusCode == 200) {
+          final List<dynamic> trailers =
+              json.decode(trailerResponse.body)['results'];
+          if (trailers.isNotEmpty) {
+            movie.trailerKey = trailers[0]['key'];
+          }
+        }
       }
-    });
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      return movies;
+    } else {
+      throw Exception('Error to load movies');
+    }
   }
 }

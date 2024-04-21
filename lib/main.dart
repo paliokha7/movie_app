@@ -23,15 +23,23 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           if (state is ThemeChanged) {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               title: 'FilmFinder',
               theme: state.theme,
-              home: const HomePage(),
+              initialRoute: '/',
+              routes: {
+                '/': (_) => const HomePage(),
+              },
             );
           } else {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               title: 'FilmFinder',
               theme: MyAppTheme.darkTheme,
-              home: const HomePage(),
+              initialRoute: '/',
+              routes: {
+                '/': (_) => const HomePage(),
+              },
             );
           }
         },
