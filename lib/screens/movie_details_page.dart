@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:task_4/cubit/saved_cubit/saved_cubit.dart';
 import 'package:task_4/data/model/movie_model.dart';
@@ -15,8 +16,11 @@ class MovieDetails extends StatefulWidget {
   State<MovieDetails> createState() => _MyWidgetState();
 }
 
-class _MyWidgetState extends State<MovieDetails> {
+class _MyWidgetState extends State<MovieDetails> with TickerProviderStateMixin {
   late YoutubePlayerController _controller;
+  late AnimationController _animationController;
+  late Animation<Color?> _colorAnimation;
+  late Animation<double> _positionAnimation;
 
   @override
   void initState() {
@@ -28,9 +32,31 @@ class _MyWidgetState extends State<MovieDetails> {
         mute: false,
       ),
     );
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _colorAnimation = ColorTween(
+      begin: AppColors.button,
+      end: Colors.green,
+    ).animate(_animationController);
+
+    _positionAnimation = Tween<double>(
+      begin: 0,
+      end: -286,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _animationController.addListener(() {
+      setState(() {});
+    });
   }
 
-  void showMovieTrailerDialog(BuildContext context) {
+  void showTrailer(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -99,23 +125,26 @@ class _MyWidgetState extends State<MovieDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: imageSize,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    "https://image.tmdb.org/t/p/original/${widget.movie.posterPath}",
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
+            Hero(
+              tag: '${widget.movie.id}',
               child: Container(
+                height: imageSize,
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    AppColors.black.withOpacity(1),
-                    AppColors.black.withOpacity(0),
-                  ], begin: Alignment.bottomCenter, end: Alignment.center),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      "https://image.tmdb.org/t/p/original/${widget.movie.posterPath}",
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                      AppColors.black.withOpacity(1),
+                      AppColors.black.withOpacity(0),
+                    ], begin: Alignment.bottomCenter, end: Alignment.center),
+                  ),
                 ),
               ),
             ),
@@ -135,6 +164,9 @@ class _MyWidgetState extends State<MovieDetails> {
                   const SizedBox(
                     height: 6,
                   ),
+                  const SizedBox(
+                    height: 6,
+                  ),
                   Text('Release date: ${widget.movie.realeseDate}  '),
                   const SizedBox(
                     height: 6,
@@ -149,7 +181,7 @@ class _MyWidgetState extends State<MovieDetails> {
                       ),
                     ),
                     onPressed: () {
-                      showMovieTrailerDialog(context);
+                      showTrailer(context);
                     },
                     label: const Text(
                       'WATCH TRAILER',
@@ -171,21 +203,32 @@ class _MyWidgetState extends State<MovieDetails> {
                 ],
               ),
             ),
+            const SizedBox(
+              height: 6,
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.button,
-        onPressed: () {
-          setState(() {
-            context.read<SavedCubit>().addFilm(widget.movie);
-          });
-          Navigator.pop(context, true);
+      floatingActionButton: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(_positionAnimation.value, 0),
+            child: FloatingActionButton(
+              backgroundColor: _colorAnimation.value,
+              onPressed: () {
+                setState(() {
+                  _animationController.forward();
+                  context.read<SavedCubit>().addFilm(widget.movie);
+                });
+              },
+              child: const Icon(
+                Icons.bookmark,
+                color: AppColors.black,
+              ),
+            ),
+          );
         },
-        child: const Icon(
-          Icons.bookmark,
-          color: AppColors.black,
-        ),
       ),
     );
   }

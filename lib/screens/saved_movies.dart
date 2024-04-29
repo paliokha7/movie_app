@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_4/cubit/saved_cubit/saved_cubit.dart';
 import 'package:task_4/data/model/movie_model.dart';
+import 'package:task_4/screens/movie_details_page.dart';
 import 'package:task_4/widgets/film_widget.dart';
 
 class SavedMovies extends StatefulWidget {
@@ -63,10 +64,13 @@ class _SavedMoviesState extends State<SavedMovies> {
                     final movie = movies[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
+                        Navigator.push(
                           context,
-                          '/movie_details',
-                          arguments: movie,
+                          MaterialPageRoute(
+                            builder: (context) => MovieDetails(
+                              movie: movie,
+                            ),
+                          ),
                         );
                       },
                       onLongPress: () {
@@ -113,9 +117,12 @@ class _SavedMoviesState extends State<SavedMovies> {
                           },
                         );
                       },
-                      child: FilmCard(
-                        image:
-                            "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                      child: Hero(
+                        tag: '${movie.id}',
+                        child: FilmCard(
+                          image:
+                              "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                        ),
                       ),
                     );
                   },

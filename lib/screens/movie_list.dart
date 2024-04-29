@@ -90,8 +90,8 @@ class _MovieListState extends State<MovieList> {
                             final movie = movies[index];
 
                             return GestureDetector(
-                              onTap: () async {
-                                final res = await Navigator.push(
+                              onTap: () {
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => MovieDetails(
@@ -99,18 +99,6 @@ class _MovieListState extends State<MovieList> {
                                     ),
                                   ),
                                 );
-                                if (!context.mounted) return;
-                                if (res != null && res) {
-                                  setState(() {
-                                    movie.isSelected = true;
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Movie added to your saved list'),
-                                    ),
-                                  );
-                                }
                               },
                               child: FilmCarousel(
                                   image:
@@ -174,8 +162,8 @@ class _MovieListState extends State<MovieList> {
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 16.0),
                                   child: GestureDetector(
-                                    onTap: () async {
-                                      final res = await Navigator.push(
+                                    onTap: () {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => MovieDetails(
@@ -183,23 +171,13 @@ class _MovieListState extends State<MovieList> {
                                           ),
                                         ),
                                       );
-                                      if (!context.mounted) return;
-                                      if (res != null) {
-                                        setState(() {
-                                          movie.isSelected = true;
-                                        });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'Movie added to your saved list'),
-                                          ),
-                                        );
-                                      }
                                     },
-                                    child: FilmCard(
-                                      image:
-                                          "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                                    child: Hero(
+                                      tag: '${movie.id}',
+                                      child: FilmCard(
+                                        image:
+                                            "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                                      ),
                                     ),
                                   ),
                                 );
@@ -255,8 +233,8 @@ class _MovieListState extends State<MovieList> {
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 16),
                                   child: GestureDetector(
-                                    onTap: () async {
-                                      final res = await Navigator.push(
+                                    onTap: () {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => MovieDetails(
@@ -264,23 +242,13 @@ class _MovieListState extends State<MovieList> {
                                           ),
                                         ),
                                       );
-                                      if (!context.mounted) return;
-                                      if (res != null && res) {
-                                        setState(() {
-                                          movie.isSelected = true;
-                                        });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'Movie added to your saved list'),
-                                          ),
-                                        );
-                                      }
                                     },
-                                    child: FilmCard(
-                                      image:
-                                          "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                                    child: Hero(
+                                      tag: '${movie.id}',
+                                      child: FilmCard(
+                                        image:
+                                            "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                                      ),
                                     ),
                                   ),
                                 );

@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:task_4/navigation/movie_list_navigation.dart';
-import 'package:task_4/navigation/profile_navigation.dart';
-import 'package:task_4/navigation/saved_navigation.dart';
+
+import 'package:task_4/screens/movie_list.dart';
+import 'package:task_4/screens/profile.dart';
+import 'package:task_4/screens/saved_movies.dart';
 
 import 'package:task_4/theme/appcolors.dart';
 
@@ -14,27 +15,32 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  late AnimationController _animationController;
   int currentIndex = 0;
 
   late List<Widget> _screens;
-  late List<GlobalKey<NavigatorState>> _navigatorKeys;
 
   @override
   void initState() {
     super.initState();
     _screens = [
-      const MovieListNavigator(),
-      const SavedMoviesNavigator(),
-      const ProfileNavigator(),
+      const MovieList(),
+      const SavedMovies(),
+      const Profile(),
     ];
-    _navigatorKeys =
-        List.generate(_screens.length, (index) => GlobalKey<NavigatorState>());
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _animationController.forward(from: 0.0);
   }
 
   void _onItemTapped(int index) {
     setState(() {
       currentIndex = index;
+      _animationController.forward(from: 0.0);
     });
   }
 
@@ -46,14 +52,11 @@ class _HomePageState extends State<HomePage> {
             _screens.length,
             (index) => Offstage(
               offstage: currentIndex != index,
-              child: Navigator(
-                key: _navigatorKeys[index],
-                onGenerateRoute: (routeSettings) {
-                  return MaterialPageRoute(
-                    settings: routeSettings,
-                    builder: (context) => _screens[index],
-                  );
-                },
+              child: FadeTransition(
+                opacity: _animationController.drive(
+                  CurveTween(curve: Curves.easeInOut),
+                ),
+                child: _screens[index],
               ),
             ),
           ),
